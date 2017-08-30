@@ -1,0 +1,16 @@
+{
+
+  "background": {
+  "page" : "background.html" },
+  "name": "Explore New Tab",
+  "manifest_version": 2,
+  "description": "Motivation quote and image that change daily, along with randmly selected articles",
+  "version": "0.0.0.1",
+  "permissions": ["bookmarks", "https://source.unsplash.com/","http://quotes.rest/", "http://*.nytimes.com/*", "http://www.rssmix.com/*"],
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+  "icons": {
+    "128": "icon.png"
+  }
+}
