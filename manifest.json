@@ -4,7 +4,7 @@
   "page" : "background.html" },
   "name": "Explore New Tab",
   "manifest_version": 2,
-  "description": "Motivation quote and image that change daily, along with randmly selected articles",
+  "description": "Motivational quote and image that change daily, along with randmly selected articles",
   "version": "0.0.0.1",
   "permissions": ["bookmarks", "storage", "https://source.unsplash.com/","http://quotes.rest/", "http://www.rssmix.com/*"],
   "chrome_url_overrides": {

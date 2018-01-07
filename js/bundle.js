@@ -131,7 +131,7 @@ function display_post(feed_data) {
 
 //Calls background page to retrieve RSS feed
 function fetch_feed() {
-  chrome.runtime.sendMessage("onoindacglppmommbbakiflnaemdoemg", {action : 'fetch_feed', url : 'http://www.rssmix.com/u/8269733/rss.xml'},
+  chrome.runtime.sendMessage("onoindacglppmommbbakiflnaemdoemg", {action : 'fetch_feed', url : 'http://www.rssmix.com/u/8269737/rss.xml'},
     function(response) {
       display_post(response);
     }
