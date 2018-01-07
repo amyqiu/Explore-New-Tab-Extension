@@ -1,5 +1,5 @@
 function parse_post(element) {
-	console.log('element', element);
+
   var $element = $(element)
 	var post = new Object();
 	post.title = $element.find("title").text();
@@ -13,6 +13,8 @@ function parse_post(element) {
 	post.id = $(element).find("guid").text();
 	post.url = $(element).find('link').text();
 	post.description = $("<div/>").html($(element).find("description")).text();
+	var date = $(element).find("dc\\:date").text();
+	post.date = new Date(date);
 	//post.img = $('img', post.description)[0].src; //107x60px
 	//var shorten = 120;
 	//if (post.title.length > 80) {
@@ -20,7 +22,6 @@ function parse_post(element) {
 	//}
 	//post.description = $.trim($(post.description).text());
 	//post.description = post.description.substr(0, shorten);
-	console.log(post);
 	return post;
 }
 
