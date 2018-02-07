@@ -58,7 +58,9 @@ function show_post(post){
   item += '</div>';
   $('#popup').append(item);
   url = post.url;
-  title = post.title;
+  //title = post.title;
+  title = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nunc metus, finibus in metus ut, rutrum luctus dui. Phasellus ultrices lacus id consectetur interdum. Aliquam erat volutpat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aliquam sed vestibulum ipsum. Mauris ut eros sed sem faucibus cursus vel sed eros. Sed auctor quam vitae ligula mattis, non faucibus massa faucibus. Donec tincidunt ipsum quis pretium efficitur. Duis ac ultricies lorem, sit amet vulputate velit. Vestibulum varius turpis non odio pharetra vehicula nec a quam. Maecenas tincidunt elit sit amet nibh bibendum cursus. Ut sed suscipit mi. Nullam elementum ligula nibh, in facilisis mi laoreet pharetra. Phasellus fringilla, elit nec accumsan bibendum, dui justo hendrerit neque, a elementum elit dui eu velit.";
+
 }
 
 function store_posts(newPosts, existingPosts){

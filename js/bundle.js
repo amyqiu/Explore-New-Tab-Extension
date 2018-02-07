@@ -2,57 +2,7 @@
 var url;
 var title;
 
-function show_post(post){
-  var item = '';
-  item += '<div class="post">';
-  item += '<a href="' + post.url + '">\
-            <span>' + post.title + '...</span>\
-          </div>\
-        </a>';
-  item += '</div>';
-  $('#popup').append(item);
-  url = post.url;
-  title = post.title;
-}
-
-function store_posts(newPosts, existingPosts){
-  newPosts.push.apply(newPosts, existingPosts);
-
-  chrome.storage.local.set({'posts': newPosts});
-  chrome.storage.local.set({'lastDate': new Date().toString()});
-}
-
-function use_existing_post(existingPosts){
-  console.log("Retrieved previous posts: ", existingPosts.posts);
-
-  show_post(existingPosts.posts[0]);
-  existingPosts.posts.splice(0,1);
-  store_posts([], existingPosts.posts);
-}
-
-function check_topics(doc){
-  if (doc.match('#Country').found){
-    return true;
-  } else if (doc.match('#Politics').found){
-    return true;
-  } else if (doc.match('#Business').found){
-    return true;
-  }
-  return false; //CHANGE!!
-}
-
-function filter_latest_posts(items, lastDate){
-  var newPosts = [];
-  var nlp = require('compromise');
-
-  $.each(items, function (index, value){
-    var item = value;
-    var post = parse_post(item);
-    var prevDate = new Date(lastDate.lastDate);
-    if (post.date < prevDate) {
-      return false;
-    } else {
-      var lexicon = {
+var lexicon = {
 "afghanistan":"Country","albania":"Country","algeria":"Country","andorra":"Country","angola":"Country","antigua & deps":"Country","argentina":"Country","armenia":"Country","australia":"Country","austria":"Country","azerbaijan":"Country",
 "bahamas":"Country","bahrain":"Country","bangladesh":"Country","barbados":"Country","belarus":"Country","belgium":"Country","belize":"Country","benin":"Country","bhutan":"Country","bolivia":"Country","bosnia herzegovina":"Country",
 "botswana":"Country","brazil":"Country","brunei":"Country","bulgaria":"Country","burkina":"Country","burundi":"Country","cambodia":"Country","cameroon":"Country","cape verde":"Country","central african rep":"Country","chad":"Country",
@@ -97,7 +47,60 @@ function filter_latest_posts(items, lastDate){
 "vulture funds":"Business","weighted average":"Business","white knight":"Business","whole-of-life policy":"Business","windfall tax":"Business","without-profits policy":"Business","write off":"Business","yen carry trade":"Business","zero interest rates":"Business","zombie funds":"Business",
 "donald trump":"Politics","justin trudeau":"Politics","benjamin ntanyahu":"Politics","ali khamenei":"Politics","king salman bin abdulaziz al saud":"Politics","dilma rousseff":"Politics","shinzao abe":"Politics","emmanuel macron":"Politics","theresa may":"Politics","pope francis":"Politics","narendra modi":"Politics","angela merkel":"Politics",
 "vladimir putin":"Politics", "xi jinping":"Politics"
-      };
+};
+
+function show_post(post){
+  var item = '';
+  item += '<div class="post">';
+  item += '<a href="' + post.url + '">\
+            <span>' + post.title + '...</span>\
+          </div>\
+        </a>';
+  item += '</div>';
+  $('#popup').append(item);
+  url = post.url;
+  //title = post.title;
+  title = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nunc metus, finibus in metus ut, rutrum luctus dui. Phasellus ultrices lacus id consectetur interdum. Aliquam erat volutpat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aliquam sed vestibulum ipsum. Mauris ut eros sed sem faucibus cursus vel sed eros. Sed auctor quam vitae ligula mattis, non faucibus massa faucibus. Donec tincidunt ipsum quis pretium efficitur. Duis ac ultricies lorem, sit amet vulputate velit. Vestibulum varius turpis non odio pharetra vehicula nec a quam. Maecenas tincidunt elit sit amet nibh bibendum cursus. Ut sed suscipit mi. Nullam elementum ligula nibh, in facilisis mi laoreet pharetra. Phasellus fringilla, elit nec accumsan bibendum, dui justo hendrerit neque, a elementum elit dui eu velit.";
+
+}
+
+function store_posts(newPosts, existingPosts){
+  newPosts.push.apply(newPosts, existingPosts);
+
+  chrome.storage.local.set({'posts': newPosts});
+  chrome.storage.local.set({'lastDate': new Date().toString()});
+}
+
+function use_existing_post(existingPosts){
+  console.log("Retrieved previous posts: ", existingPosts.posts);
+
+  show_post(existingPosts.posts[0]);
+  existingPosts.posts.splice(0,1);
+  store_posts([], existingPosts.posts);
+}
+
+function check_topics(doc){
+  if (doc.match('#Country').found){
+    return true;
+  } else if (doc.match('#Politics').found){
+    return true;
+  } else if (doc.match('#Business').found){
+    return true;
+  }
+  return false; //CHANGE!!
+}
+
+function filter_latest_posts(items, lastDate){
+  var newPosts = [];
+  var nlp = require('compromise');
+
+  $.each(items, function (index, value){
+    var item = value;
+    var post = parse_post(item);
+    var prevDate = new Date(lastDate.lastDate);
+    if (post.date < prevDate) {
+      return false;
+    } else {
       var doc = nlp(post.description + " " + post.title + " " + post.tag, lexicon);
       if (check_topics(doc)){
         post.topics = doc.topics().out('array');

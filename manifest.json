@@ -1,16 +1,16 @@
 {
 
   "background": {
-  "page" : "background.html" },
+  "scripts": ["js/jquery/jquery.min.js", "js/parse.js", "js/background_fetch.js"] },
   "name": "Explore New Tab",
   "manifest_version": 2,
-  "description": "Motivational quote and image that change daily, along with randmly selected articles",
+  "description": "Motivational quote and image that change daily, along with articles chosen to expand your horizons",
   "version": "0.0.0.1",
   "permissions": ["bookmarks", "storage", "https://source.unsplash.com/","http://quotes.rest/", "http://www.rssmix.com/*"],
   "chrome_url_overrides": {
     "newtab": "index.html"
   },
   "icons": {
-    "128": "icon.png"
+    "128": "images/icon.png"
   }
 }

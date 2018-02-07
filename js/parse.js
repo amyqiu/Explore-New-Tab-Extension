@@ -1,5 +1,4 @@
 function parse_post(element) {
-
   var $element = $(element)
 	var post = new Object();
 	post.title = $element.find("title").text();
@@ -8,14 +7,11 @@ function parse_post(element) {
   for (var i = 0; i < categories.length; i++)
     post.categories.push(categories[i].innerHTML)
   post.tag = post.categories.join(', ')
-	//post.tag = post.title.split('[')[1].split(']')[0];
-	//post.title = post.title.split('[')[0];
 	post.id = $(element).find("guid").text();
 	post.url = $(element).find('link').text();
 	post.description = $("<div/>").html($(element).find("description")).text();
 	var date = $(element).find("dc\\:date").text();
 	post.date = new Date(date);
-	//post.img = $('img', post.description)[0].src; //107x60px
 	//var shorten = 120;
 	//if (post.title.length > 80) {
 	//	shorten = 70;
