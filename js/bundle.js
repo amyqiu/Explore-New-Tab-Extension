@@ -12,16 +12,14 @@ function show_post(post){
   item += '</div>';
   $('#popup').append(item);
   url = post.url;
-  //title = post.title;
-  title = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nunc metus, finibus in metus ut, rutrum luctus dui. Phasellus ultrices lacus id consectetur interdum. Aliquam erat volutpat. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aliquam sed vestibulum ipsum. Mauris ut eros sed sem faucibus cursus vel sed eros. Sed auctor quam vitae ligula mattis, non faucibus massa faucibus. Donec tincidunt ipsum quis pretium efficitur. Duis ac ultricies lorem, sit amet vulputate velit. Vestibulum varius turpis non odio pharetra vehicula nec a quam. Maecenas tincidunt elit sit amet nibh bibendum cursus. Ut sed suscipit mi. Nullam elementum ligula nibh, in facilisis mi laoreet pharetra. Phasellus fringilla, elit nec accumsan bibendum, dui justo hendrerit neque, a elementum elit dui eu velit.";
-
+  title = post.title;
 }
 
 function store_posts(newPosts, existingPosts){
   newPosts.push.apply(newPosts, existingPosts);
 
   chrome.storage.local.set({'posts': newPosts});
-  chrome.storage.local.set({'lastDate': new Date().toString()});
+  chrome.storage.sync.set({'lastDate': new Date().toString()});
 }
 
 function use_existing_post(existingPosts){
@@ -33,14 +31,33 @@ function use_existing_post(existingPosts){
 }
 
 function check_topics(doc){
-  if (doc.match('#Country').found){
+  var selectedOptions = [];
+  var location;
+  chrome.storage.sync.get({
+    selectedOptions: ['business', 'politics'],
+    location: "North America"
+  }, function(items) {
+    selectedOptions = items.selectedOptions;
+    location = items.location;
+  });
+
+  if (doc.match('#Country').found){ //Fix to target region??
     return true;
-  } else if (doc.match('#Politics').found){
+  } else if (doc.match('#Politics').found && selectedOptions.includes("politics")){
     return true;
-  } else if (doc.match('#Business').found){
+  } else if (doc.match('#Economics').found && selectedOptions.includes("economics")){
     return true;
+  } else if (doc.match('#Business').found && selectedOptions.includes("business")){
+    return true;
+  } else if (doc.match('#Technology').found && selectedOptions.includes("technology")){
+    return true;
+  } else if (doc.match('#Nonprofits').found && selectedOptions.includes("nonprofits")){
+    return true;
+  } else if (doc.match('#Art').found && selectedOptions.includes("art")){
+    return true;
+  } else{
+    return false;
   }
-  return false; //CHANGE!!
 }
 
 function filter_latest_posts(items, lastDate){
@@ -79,7 +96,9 @@ function display_post(feed_data) {
   $xml = $(xml_doc);
   var items = $xml.find("item");
 
-  chrome.storage.local.get('lastDate', function(date) {
+  chrome.storage.sync.get({
+    lastDate: 0,
+  }, function(date) {
     filter_latest_posts(items, date.lastDate);
   });
 }
