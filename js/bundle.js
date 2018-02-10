@@ -1,28 +1,23 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var url;
-var title;
-
 function show_post(post) {
-  var item = '';
-  item += '<div class="post">';
-  item += '<a href="' + post.url + '">\
-            <span>' + post.title + '...</span>\
+  var item = "";
+  item += "<div class='post'>";
+  item += "<a id='link' href='" + post.url + "'>\
+            <span id='title'>" + post.title + "...</span>\
           </div>\
-        </a>';
-  item += '</div>';
-  $('#popup').append(item);
-  url = post.url;
-  title = post.title;
+        </a>";
+  item += "</div>";
+  $("#popup").append(item);
 }
 
 function store_posts(newPosts, existingPosts) {
   newPosts.push.apply(newPosts, existingPosts);
 
   chrome.storage.local.set({
-    'posts': newPosts
+    "posts": newPosts
   });
   chrome.storage.sync.set({
-    'lastDate': new Date().toString()
+    "lastDate": new Date().toString()
   });
 }
 
@@ -37,13 +32,13 @@ function use_existing_post(existingPosts) {
 function check_topics(doc, selectedOptions, location) {
   var topicFound = false;
   selectedOptions.forEach(function(option) {
-    if (doc.match('#' + option).found){
+    if (doc.match("#" + option).found){
       topicFound = true;
     }
   });
 
   var otherLocation = false;
-  if (!doc.match('#' + location).found) {
+  if (!doc.match("#" + location).found) {
     otherLocation = true;
   }
 
@@ -52,8 +47,8 @@ function check_topics(doc, selectedOptions, location) {
 
 function filter_latest_posts(items, lastDate, selectedOptions, location) {
   var newPosts = [];
-  var nlp = require('compromise');
-  var lexicon = require('../lexicon.json');
+  var nlp = require("compromise");
+  var lexicon = require("../lexicon.json");
 
   $.each(items, function(index, value) {
     var item = value;
@@ -62,7 +57,7 @@ function filter_latest_posts(items, lastDate, selectedOptions, location) {
     if (post.date > prevDate) {
       var doc = nlp(post.description + " " + post.title + " " + post.tag, lexicon);
       if (check_topics(doc, selectedOptions, location)) {
-        post.topics = doc.topics().out('array');
+        post.topics = doc.topics().out("array");
         newPosts.push(post);
       }
     }
@@ -71,12 +66,11 @@ function filter_latest_posts(items, lastDate, selectedOptions, location) {
     var currentPost = newPosts[0];
     show_post(currentPost);
     newPosts.splice(0, 1);
-    console.log("putting these posts into storage: ", newPosts);
-    chrome.storage.local.get('posts', function(existingPosts) {
+    chrome.storage.local.get("posts", function(existingPosts) {
       store_posts(newPosts, existingPosts);
     });
   } else {
-    chrome.storage.local.get('posts', use_existing_post);
+    chrome.storage.local.get("posts", use_existing_post);
   }
 }
 
@@ -88,7 +82,7 @@ function display_post(feed_data) {
 
   chrome.storage.sync.get({
     lastDate: 0,
-    selectedOptions: ['Business', 'Politics'],
+    selectedOptions: ["Business", "Politics"],
     location: "North America"
   }, function(options) {
     filter_latest_posts(items, options.lastDate, options.selectedOptions, options.location);
@@ -98,7 +92,7 @@ function display_post(feed_data) {
 //Calls background page to retrieve RSS feed
 function fetch_feed() {
   chrome.runtime.sendMessage("onoindacglppmommbbakiflnaemdoemg", {
-      action: 'fetch_feed',
+      action: "fetch_feed",
       url: 'http://www.rssmix.com/u/8269737/rss.xml'
     },
     function(response) {
@@ -109,11 +103,13 @@ function fetch_feed() {
 
 $(document).ready(function() {
   //Button for bookmarking articles
-  var bookmarkButton = document.querySelector('.bookmark');
-  bookmarkButton.addEventListener('click', function() {
+  var bookmarkButton = document.querySelector("#bookmark");
+  bookmarkButton.addEventListener("click", function() {
+    var title = document.querySelector("#title").innerHTML;
+    var url = document.querySelector("#link").getAttribute("href");
     chrome.bookmarks.create({
-      'title': title,
-      'url': url
+      "title": title,
+      "url": url
     });
     bookmarkButton.classList.add("disabled");
     bookmarkButton.innerHTML = "Bookmarked!";

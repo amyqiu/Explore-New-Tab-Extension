@@ -15,10 +15,10 @@ function save_options() {
     location: location
   }, function() {
     // Update status to let user know options were saved.
-    var saveButton = document.querySelector('#save');
+    var saveButton = document.querySelector("#save");
     saveButton.innerHTML = "Saved!";
     setTimeout(function() {
-      status.textContent = 'Could not save!';
+      status.textContent = "Could not save!";
     }, 750);
   });
 }
@@ -27,7 +27,7 @@ function save_options() {
 // stored in chrome.storage.
 function restore_options() {
   chrome.storage.sync.get({
-    selectedOptions: ['Business', 'Politics'],
+    selectedOptions: ["Business", "Politics"],
     location: "North America"
   }, function(items) {
     var articleOptions = items.selectedOptions;
@@ -35,9 +35,8 @@ function restore_options() {
       document.getElementById(option.toLowerCase()).checked = true;
     });
     var location = items.location;
-    document.getElementById('location').value = location;
+    document.getElementById("location").value = location;
   });
 }
-document.addEventListener('DOMContentLoaded', restore_options);
-document.getElementById('save').addEventListener('click',
-  save_options);
+document.addEventListener("DOMContentLoaded", restore_options);
+document.getElementById("save").addEventListener("click", save_options);

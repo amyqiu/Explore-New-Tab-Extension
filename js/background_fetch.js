@@ -6,18 +6,18 @@ function fetch_feed(url, callback) {
           var data = xhr.responseText;
           callback(data);
         } else {
-          console.log('Response was not 200', xhr.status)
+          console.log("Response was not 200", xhr.status)
           callback(null);
         }
       }
     }
-    xhr.open('GET', url, true);
+    xhr.open("GET", url, true);
     xhr.send();
 }
 
 
 function onRequest(request, sender, callback) {
-  if (request.action == 'fetch_feed') {
+  if (request.action == "fetch_feed") {
         fetch_feed(request.url, callback);
       }
   return true;
