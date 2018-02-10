@@ -4,7 +4,8 @@ function save_options() {
   var selectedOptions = [];
   for (var i = 0; i < articleOptions.length; ++i) {
     if (articleOptions[i].checked) {
-      selectedOptions.push(articleOptions[i].id);
+      var capitalizedOption = articleOptions[i].id.charAt(0).toUpperCase() + articleOptions[i].id.slice(1);
+      selectedOptions.push(capitalizedOption);
     }
   }
   var location = document.getElementById("location").value;
@@ -26,12 +27,12 @@ function save_options() {
 // stored in chrome.storage.
 function restore_options() {
   chrome.storage.sync.get({
-    selectedOptions: ['business', 'politics'],
+    selectedOptions: ['Business', 'Politics'],
     location: "North America"
   }, function(items) {
     var articleOptions = items.selectedOptions;
     articleOptions.forEach(function(option) {
-      document.getElementById(option).checked = true;
+      document.getElementById(option.toLowerCase()).checked = true;
     });
     var location = items.location;
     document.getElementById('location').value = location;

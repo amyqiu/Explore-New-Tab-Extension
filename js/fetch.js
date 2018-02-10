@@ -33,37 +33,23 @@ function use_existing_post(existingPosts) {
   store_posts([], existingPosts.posts);
 }
 
-function check_topics(doc) {
-  var selectedOptions = [];
-  var location;
-  chrome.storage.sync.get({
-    selectedOptions: ['business', 'politics'],
-    location: "North America"
-  }, function(items) {
-    selectedOptions = items.selectedOptions;
-    location = items.location;
+function check_topics(doc, selectedOptions, location) {
+  var topicFound = false;
+  selectedOptions.forEach(function(option) {
+    if (doc.match('#' + option).found){
+      topicFound = true;
+    }
   });
 
-  if (doc.match('#Country').found) { //Fix to target region??
-    return true;
-  } else if (doc.match('#Politics').found && selectedOptions.includes("politics")) {
-    return true;
-  } else if (doc.match('#Economics').found && selectedOptions.includes("economics")) {
-    return true;
-  } else if (doc.match('#Business').found && selectedOptions.includes("business")) {
-    return true;
-  } else if (doc.match('#Technology').found && selectedOptions.includes("technology")) {
-    return true;
-  } else if (doc.match('#Nonprofits').found && selectedOptions.includes("nonprofits")) {
-    return true;
-  } else if (doc.match('#Art').found && selectedOptions.includes("art")) {
-    return true;
-  } else {
-    return false;
+  var otherLocation = false;
+  if (!doc.match('#' + location).found) {
+    otherLocation = true;
   }
+
+  return topicFound && otherLocation;
 }
 
-function filter_latest_posts(items, lastDate) {
+function filter_latest_posts(items, lastDate, selectedOptions, location) {
   var newPosts = [];
   var nlp = require('compromise');
   var lexicon = require('../lexicon.json');
@@ -74,7 +60,7 @@ function filter_latest_posts(items, lastDate) {
     var prevDate = new Date(lastDate);
     if (post.date > prevDate) {
       var doc = nlp(post.description + " " + post.title + " " + post.tag, lexicon);
-      if (check_topics(doc)) {
+      if (check_topics(doc, selectedOptions, location)) {
         post.topics = doc.topics().out('array');
         newPosts.push(post);
       }
@@ -101,8 +87,10 @@ function display_post(feed_data) {
 
   chrome.storage.sync.get({
     lastDate: 0,
-  }, function(date) {
-    filter_latest_posts(items, date.lastDate);
+    selectedOptions: ['Business', 'Politics'],
+    location: "North America"
+  }, function(options) {
+    filter_latest_posts(items, options.lastDate, options.selectedOptions, options.location);
   });
 }
 
