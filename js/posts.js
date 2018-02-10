@@ -73,10 +73,6 @@ function filterPosts(items, lastDate, selectedOptions, location) {
   }
 }
 
-function parseXML(xmlStr) {
-   return new window.DOMParser().parseFromString(xmlStr, "text/xml");
-}
-
 //Randomly picks an article to display
 function displayPost(feedData) {
   var xmlDoc = parseXML(feedData);
@@ -92,7 +88,7 @@ function displayPost(feedData) {
 }
 
 //Calls background page to retrieve RSS feed
-function fetchFeed() {
+function getPosts() {
   chrome.runtime.sendMessage("onoindacglppmommbbakiflnaemdoemg", {
       action: "fetch_feed",
       url: 'http://www.rssmix.com/u/8269737/rss.xml'
@@ -121,5 +117,5 @@ document.addEventListener("DOMContentLoaded", function(event) {
   fetchQuote();
 
   //Getting articles from RSS feed
-  fetchFeed();
+  getPosts();
 });

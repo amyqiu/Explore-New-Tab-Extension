@@ -36,3 +36,7 @@ function getJSON(url, callback) {
   xhr.open("GET", url, true);
   xhr.send();
 }
+
+function parseXML(xmlStr) {
+   return new window.DOMParser().parseFromString(xmlStr, "text/xml");
+}
