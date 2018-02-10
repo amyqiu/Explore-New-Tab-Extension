@@ -1,39 +1,38 @@
-function parse_post(element) {
-  var $element = $(element);
-	var post = new Object();
-	post.title = $element.find("title").text();
-	post.categories = [];
-	var categories = $element.find("category");
-  for (var i = 0; i < categories.length; i++){
-    post.categories.push(categories[i].innerHTML);
+function parsePost(element) {
+  var post = new Object();
+  post.title = element.getElementsByTagName("title")[0].childNodes[0].nodeValue;
+  post.categories = [];
+  var categories = element.getElementsByTagName("category");
+  for (var i = 0; i < categories.length; i++) {
+    post.categories.push(categories[i].childNodes[0].nodeValue);
   }
   post.tag = post.categories.join(", ");
-	post.id = $(element).find("guid").text();
-	post.url = $(element).find('link').text();
-	post.description = $("<div/>").html($(element).find("description")).text();
-	var date = $(element).find("dc\\:date").text();
-	post.date = new Date(date);
-	return post;
+  post.id = element.getElementsByTagName("guid")[0].childNodes[0].nodeValue;
+  post.url = element.getElementsByTagName("link")[0].childNodes[0].nodeValue;
+  post.description = element.getElementsByTagName("description")[0].childNodes[0].nodeValue;
+  var date = element.getElementsByTagName("dc:date")[0];
+  if (date != null){
+    post.date = new Date(date.textContent);
+  } else{
+    post.date = new Date(0);
+  }
+
+  return post;
 }
 
-function open_item(url) {
-	chrome.tabs.create({url: url});
-	chrome.browserAction.setBadgeText({text:""});
-}
-
-function fetch_feed(url, callback) {
+function getJSON(url, callback) {
   var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function(data) {
-      if (xhr.readyState == 4) {
-        if (xhr.status == 200) {
-          var data = xhr.responseText;
-          callback(data);
-        } else {
-          console.log("Response was not 200", xhr.status)
-          callback(null);
-        }
+  xhr.onreadystatechange = function(data) {
+    if (xhr.readyState == 4) {
+      if (xhr.status == 200) {
+        var data = xhr.responseText;
+        callback(data);
+      } else {
+        console.log("Response was not 200", xhr.status)
+        callback(null);
       }
     }
-    xhr.open("GET", url, true);
-    xhr.send();
+  }
+  xhr.open("GET", url, true);
+  xhr.send();
 }

@@ -1,5 +1,4 @@
-// Saves options to chrome.storage
-function save_options() {
+function saveOptions() {
   var articleOptions = document.getElementsByClassName("articleOption");
   var selectedOptions = [];
   for (var i = 0; i < articleOptions.length; ++i) {
@@ -23,20 +22,18 @@ function save_options() {
   });
 }
 
-// Restores select box and checkbox state using the preferences
-// stored in chrome.storage.
-function restore_options() {
+function restoreOptions() {
   chrome.storage.sync.get({
     selectedOptions: ["Business", "Politics"],
     location: "North America"
-  }, function(items) {
-    var articleOptions = items.selectedOptions;
+  }, function(options) {
+    var articleOptions = options.selectedOptions;
     articleOptions.forEach(function(option) {
       document.getElementById(option.toLowerCase()).checked = true;
     });
-    var location = items.location;
+    var location = options.location;
     document.getElementById("location").value = location;
   });
 }
-document.addEventListener("DOMContentLoaded", restore_options);
-document.getElementById("save").addEventListener("click", save_options);
+document.addEventListener("DOMContentLoaded", restoreOptions);
+document.getElementById("save").addEventListener("click", saveOptions);

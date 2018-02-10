@@ -1,6 +1,6 @@
 {
   "background": {
-    "scripts": ["js/jquery/jquery.min.js", "js/parse.js", "js/background_fetch.js"]
+    "scripts": ["js/parse.js", "js/background_fetch.js"]
   },
   "name": "Explore New Tab",
   "manifest_version": 2,

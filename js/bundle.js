@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-function show_post(post) {
+function showPost(post) {
   var item = "";
   item += "<div class='post'>";
   item += "<a id='link' href='" + post.url + "'>\
@@ -7,10 +7,11 @@ function show_post(post) {
           </div>\
         </a>";
   item += "</div>";
-  $("#popup").append(item);
+  var article = document.querySelector("#article");
+  article.innerHTML = item;
 }
 
-function store_posts(newPosts, existingPosts) {
+function storePosts(newPosts, existingPosts) {
   newPosts.push.apply(newPosts, existingPosts);
 
   chrome.storage.local.set({
@@ -21,15 +22,15 @@ function store_posts(newPosts, existingPosts) {
   });
 }
 
-function use_existing_post(existingPosts) {
-  console.log("Retrieved previous posts: ", existingPosts.posts);
+function useExistingPost(options) {
+  console.log("Retrieved previous posts: ", options.posts);
 
-  show_post(existingPosts.posts[0]);
-  existingPosts.posts.splice(0, 1);
-  store_posts([], existingPosts.posts);
+  showPost(options.posts[0]);
+  options.posts.splice(0, 1);
+  storePosts([], options.posts);
 }
 
-function check_topics(doc, selectedOptions, location) {
+function checkTopics(doc, selectedOptions, location) {
   var topicFound = false;
   selectedOptions.forEach(function(option) {
     if (doc.match("#" + option).found){
@@ -45,18 +46,17 @@ function check_topics(doc, selectedOptions, location) {
   return topicFound && otherLocation;
 }
 
-function filter_latest_posts(items, lastDate, selectedOptions, location) {
+function filterPosts(items, lastDate, selectedOptions, location) {
   var newPosts = [];
   var nlp = require("compromise");
   var lexicon = require("../lexicon.json");
 
-  $.each(items, function(index, value) {
-    var item = value;
-    var post = parse_post(item);
+  Array.from(items).forEach(function(item) {
+    var post = parsePost(item);
     var prevDate = new Date(lastDate);
     if (post.date > prevDate) {
       var doc = nlp(post.description + " " + post.title + " " + post.tag, lexicon);
-      if (check_topics(doc, selectedOptions, location)) {
+      if (checkTopics(doc, selectedOptions, location)) {
         post.topics = doc.topics().out("array");
         newPosts.push(post);
       }
@@ -64,44 +64,47 @@ function filter_latest_posts(items, lastDate, selectedOptions, location) {
   });
   if (newPosts.length > 0) {
     var currentPost = newPosts[0];
-    show_post(currentPost);
+    showPost(currentPost);
     newPosts.splice(0, 1);
     chrome.storage.local.get("posts", function(existingPosts) {
-      store_posts(newPosts, existingPosts);
+      storePosts(newPosts, existingPosts);
     });
   } else {
-    chrome.storage.local.get("posts", use_existing_post);
+    chrome.storage.local.get("posts", useExistingPost);
   }
 }
 
+function parseXML(xmlStr) {
+   return new window.DOMParser().parseFromString(xmlStr, "text/xml");
+}
+
 //Randomly picks an article to display
-function display_post(feed_data) {
-  var xml_doc = $.parseXML(feed_data);
-  $xml = $(xml_doc);
-  var items = $xml.find("item");
+function displayPost(feedData) {
+  var xmlDoc = parseXML(feedData);
+  var items = xmlDoc.getElementsByTagName("item");
 
   chrome.storage.sync.get({
     lastDate: 0,
     selectedOptions: ["Business", "Politics"],
     location: "North America"
   }, function(options) {
-    filter_latest_posts(items, options.lastDate, options.selectedOptions, options.location);
+    filterPosts(items, options.lastDate, options.selectedOptions, options.location);
   });
 }
 
 //Calls background page to retrieve RSS feed
-function fetch_feed() {
+function fetchFeed() {
   chrome.runtime.sendMessage("onoindacglppmommbbakiflnaemdoemg", {
       action: "fetch_feed",
       url: 'http://www.rssmix.com/u/8269737/rss.xml'
     },
     function(response) {
-      display_post(response);
+      displayPost(response);
     }
   );
 }
 
-$(document).ready(function() {
+document.addEventListener("DOMContentLoaded", function(event) {
   //Button for bookmarking articles
   var bookmarkButton = document.querySelector("#bookmark");
   bookmarkButton.addEventListener("click", function() {
@@ -115,8 +118,11 @@ $(document).ready(function() {
     bookmarkButton.innerHTML = "Bookmarked!";
   });
 
+  //Getting quote
+  fetchQuote();
+
   //Getting articles from RSS feed
-  fetch_feed();
+  fetchFeed();
 });
 
 },{"../lexicon.json":2,"compromise":3}],2:[function(require,module,exports){
