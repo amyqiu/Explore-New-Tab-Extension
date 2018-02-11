@@ -13,7 +13,6 @@ function saveOptions() {
     selectedOptions: selectedOptions,
     location: location
   }, function() {
-    // Update status to let user know options were saved.
     var saveButton = document.querySelector("#save");
     saveButton.innerHTML = "Saved!";
     setTimeout(function() {
@@ -35,5 +34,6 @@ function restoreOptions() {
     document.getElementById("location").value = location;
   });
 }
+
 document.addEventListener("DOMContentLoaded", restoreOptions);
 document.getElementById("save").addEventListener("click", saveOptions);

@@ -1,4 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+//Adds html to display post
 function showPost(post) {
   var item = "";
   item += "<div class='post'>";
@@ -11,6 +12,7 @@ function showPost(post) {
   article.innerHTML = item;
 }
 
+//Updates storage with new posts
 function storePosts(newPosts, existingPosts) {
   newPosts.push.apply(newPosts, existingPosts);
 
@@ -22,6 +24,7 @@ function storePosts(newPosts, existingPosts) {
   });
 }
 
+//Removes post from saved posts to display
 function useExistingPost(options) {
   console.log("Retrieved previous posts: ", options.posts);
 
@@ -30,7 +33,32 @@ function useExistingPost(options) {
   storePosts([], options.posts);
 }
 
-function checkTopics(doc, selectedOptions, location) {
+//Converts xml to post object
+function parsePost(item) {
+  var post = new Object();
+  post.title = item.getElementsByTagName("title")[0].childNodes[0].nodeValue;
+  post.categories = [];
+  var categories = item.getElementsByTagName("category");
+  for (var i = 0; i < categories.length; i++) {
+    post.categories.push(categories[i].childNodes[0].nodeValue);
+  }
+  post.tag = post.categories.join(", ");
+  post.id = item.getElementsByTagName("guid")[0].childNodes[0].nodeValue;
+  post.url = item.getElementsByTagName("link")[0].childNodes[0].nodeValue;
+  post.description = item.getElementsByTagName("description")[0].childNodes[0].nodeValue;
+  var date = item.getElementsByTagName("dc:date")[0];
+  if (date != null){
+    post.date = new Date(date.textContent);
+  } else{
+    post.date = new Date(0);
+  }
+
+  return post;
+}
+
+//Determines if a post qualifies under user criteria
+function checkPostTopics(doc, selectedOptions, location) {
+  //At least one user-selected topic should match
   var topicFound = false;
   selectedOptions.forEach(function(option) {
     if (doc.match("#" + option).found){
@@ -38,6 +66,7 @@ function checkTopics(doc, selectedOptions, location) {
     }
   });
 
+  //Location should not match user's location
   var otherLocation = false;
   if (!doc.match("#" + location).found) {
     otherLocation = true;
@@ -46,6 +75,7 @@ function checkTopics(doc, selectedOptions, location) {
   return topicFound && otherLocation;
 }
 
+//Filters new posts based on date and topics
 function filterPosts(items, lastDate, selectedOptions, location) {
   var newPosts = [];
   var nlp = require("compromise");
@@ -56,7 +86,7 @@ function filterPosts(items, lastDate, selectedOptions, location) {
     var prevDate = new Date(lastDate);
     if (post.date > prevDate) {
       var doc = nlp(post.description + " " + post.title + " " + post.tag, lexicon);
-      if (checkTopics(doc, selectedOptions, location)) {
+      if (checkPostTopics(doc, selectedOptions, location)) {
         post.topics = doc.topics().out("array");
         newPosts.push(post);
       }
@@ -74,8 +104,8 @@ function filterPosts(items, lastDate, selectedOptions, location) {
   }
 }
 
-//Randomly picks an article to display
-function displayPost(feedData) {
+//Randomly picks a post to display
+function pickPost(feedData) {
   var xmlDoc = parseXML(feedData);
   var items = xmlDoc.getElementsByTagName("item");
 
@@ -95,7 +125,7 @@ function getPosts() {
       url: 'http://www.rssmix.com/u/8269737/rss.xml'
     },
     function(response) {
-      displayPost(response);
+      pickPost(response);
     }
   );
 }
@@ -115,7 +145,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
   });
 
   //Getting quote
-  fetchQuote();
+  getQuote();
 
   //Getting articles from RSS feed
   getPosts();
