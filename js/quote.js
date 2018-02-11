@@ -1,5 +1,5 @@
 function getQuote(){
-  getJSON("http://quotes.rest/qod.json", displayQuote);
+  getData("http://quotes.rest/qod.json", displayQuote);
 }
 
 function displayQuote(data){

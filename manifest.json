@@ -1,7 +1,4 @@
 {
-  "background": {
-    "scripts": ["js/utility.js", "js/background.js"]
-  },
   "name": "Explore New Tab",
   "manifest_version": 2,
   "description": "Motivational quote and image that change daily, along with articles chosen to expand your horizons",

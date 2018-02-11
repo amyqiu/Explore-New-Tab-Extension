@@ -7,7 +7,7 @@ function saveOptions() {
       selectedTopics.push(capitalizedTopic);
     }
   }
-  var location = document.getElementById("location").value;
+  var location = document.getElementById("location").value.replace(/\s/g, '');
 
   chrome.storage.sync.set({
     selectedTopics: selectedTopics,

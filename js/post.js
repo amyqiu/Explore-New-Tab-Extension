@@ -86,7 +86,8 @@ function filterPosts(items, lastDate, selectedTopics, location) {
     if (post.date > prevDate) {
       var doc = nlp(post.description + " " + post.title + " " + post.tag, lexicon);
       if (checkPostTopics(doc, selectedTopics, location)) {
-        post.topics = doc.topics().out("array");
+        post.topics = doc.match('#NorthAmerica').out('match');
+        post.topics1 = doc.match('#Europe').out('match');
         newPosts.push(post);
       }
     }
@@ -116,16 +117,9 @@ function pickPost(feedData) {
   });
 }
 
-// Call background page to retrieve RSS feed
+// Gets feed from rss mix
 function getPosts() {
-  chrome.runtime.sendMessage("onoindacglppmommbbakiflnaemdoemg", {
-      action: "fetch_feed",
-      url: "http://www.rssmix.com/u/8269737/rss.xml"
-    },
-    function(response) {
-      pickPost(response);
-    }
-  );
+  getData("http://www.rssmix.com/u/8269737/rss.xml", pickPost);
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {

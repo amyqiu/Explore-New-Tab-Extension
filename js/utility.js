@@ -1,4 +1,4 @@
-function getJSON(url, callback) {
+function getData(url, callback) {
   var xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function(data) {
     if (xhr.readyState == 4) {
